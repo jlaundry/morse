@@ -145,12 +145,12 @@ var MorseCodePlayer = function(duration = 55, tone = 587) {
  * @return {AudioBuffer} buffer - resulting buffer with sinusoid
  */
 MorseCodePlayer.prototype.createToneSignal = function(len, freq) {
-    len *= _context.sampleRate / 1000;
-    var buffer = _context.createBuffer(1, len, _context.sampleRate);
+    len *= audioContext.sampleRate / 1000;
+    var buffer = audioContext.createBuffer(1, len, audioContext.sampleRate);
     var data = buffer.getChannelData(0);
     var digitalFreq = 0.1;
     if (freq) {
-        digitalFreq = 2 * Math.PI * freq / _context.sampleRate;
+        digitalFreq = 2 * Math.PI * freq / audioContext.sampleRate;
     }
     for (var i = 0; i < len; i++) {
         data[i] = Math.sin(digitalFreq * i);
@@ -160,16 +160,16 @@ MorseCodePlayer.prototype.createToneSignal = function(len, freq) {
 
 MorseCodePlayer.prototype.setDotSound = function(decodedArrayBuffer, obj) {
     var self = obj ? obj : this;
-    self.dotSource = _context.createBufferSource();
+    self.dotSource = audioContext.createBufferSource();
     self.dotSource.buffer = decodedArrayBuffer;
-    self.dotSource.connect(_analyser);
+    self.dotSource.connect(audioContext.destination);
 }
 
 MorseCodePlayer.prototype.setDashSound = function(decodedArrayBuffer, obj) {
     var self = obj ? obj : this;
-    self.dashSource = _context.createBufferSource();
+    self.dashSource = audioContext.createBufferSource();
     self.dashSource.buffer = decodedArrayBuffer;
-    self.dashSource.connect(_analyser);
+    self.dashSource.connect(audioContext.destination);
 }
 
 MorseCodePlayer.prototype.playText = function(text) {
@@ -204,46 +204,39 @@ MorseCodePlayer.prototype.stop = function() {
 
 var _morse = new MorseCodec();
 
-var _context, _analyser;
 
-// Fix iOS Audio Context by Blake Kus https://gist.github.com/kus/3f01d60569eeadefe3a1
-// MIT license
+// Modified from  https://gist.github.com/kus/3f01d60569eeadefe3a1
 (function() {
-	window.AudioContext = window.AudioContext || window.webkitAudioContext;
-	if (window.AudioContext) {
-		window.audioContext = new window.AudioContext();
-	}
+
+    window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    
 	var fixAudioContext = function (e) {
-		if (window.audioContext) {
-			// Create empty buffer
-			var buffer = window.audioContext.createBuffer(1, 1, 22050);
-			var source = window.audioContext.createBufferSource();
-			source.buffer = buffer;
-			// Connect to output (speakers)
-			source.connect(window.audioContext.destination);
-			// Play sound
-			if (source.start) {
-				source.start(0);
-			} else if (source.play) {
-				source.play(0);
-			} else if (source.noteOn) {
-				source.noteOn(0);
-			}
-		}
+        
+        // Unlock the audioContext by calling resume - allows us to play audio on iOS Safari
+        if (audioContext) {
+            audioContext.resume();
+        }
+        
+        // Unlock HTML5 Audio - load a data url of short silence and play it
+        // This will allow us to play web audio when the mute toggle is on
+        // https://stackoverflow.com/questions/21122418/ios-webaudio-only-works-on-headphones
+        var silenceDataURL = "data:audio/mp3;base64,//MkxAAHiAICWABElBeKPL/RANb2w+yiT1g/gTok//lP/W/l3h8QO/OCdCqCW2Cw//MkxAQHkAIWUAhEmAQXWUOFW2dxPu//9mr60ElY5sseQ+xxesmHKtZr7bsqqX2L//MkxAgFwAYiQAhEAC2hq22d3///9FTV6tA36JdgBJoOGgc+7qvqej5Zu7/7uI9l//MkxBQHAAYi8AhEAO193vt9KGOq+6qcT7hhfN5FTInmwk8RkqKImTM55pRQHQSq//MkxBsGkgoIAABHhTACIJLf99nVI///yuW1uBqWfEu7CgNPWGpUadBmZ////4sL//MkxCMHMAH9iABEmAsKioqKigsLCwtVTEFNRTMuOTkuNVVVVVVVVVVVVVVVVVVV//MkxCkECAUYCAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV";
+        var tag = document.createElement("audio");
+        tag.controls = false;
+        tag.preload = "auto";
+        tag.loop = false;
+        tag.src = silenceDataURL;
+        tag.play();
+
 		// Remove events
 		document.removeEventListener('touchstart', fixAudioContext);
-		document.removeEventListener('touchend', fixAudioContext);
+        document.removeEventListener('touchend', fixAudioContext);
+        
+    morsePlayer = new MorseCodePlayer(55);
+        
 	};
 	// iOS 6-8
 	document.addEventListener('touchstart', fixAudioContext);
 	// iOS 9
     document.addEventListener('touchend', fixAudioContext);
-    
-    _context = new AudioContext();
-
-    _analyser = _context.createAnalyser();
-    _analyser.connect(_context.destination);
-    _analyser.fftSize = 8192;
 })();
-
-

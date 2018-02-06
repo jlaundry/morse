@@ -18,31 +18,30 @@ const KEY_HEIGHT = 50;
 const KEY_ACTIVE = "#fa9f1f";
 const KEY_INACTIVE = "#666";
 
-if(!localStorage.getItem('level')){
-    var level = 1;
-    localStorage.setItem('level', level);
-} else {
-    var level = parseInt(localStorage.getItem('level'));
-}
-
-const ROUNDS = 10;
+const ROUNDS = 20;
 var round = 0;
 var correct = 0;
+var level, current_keyboard;
 
-var current_keyboard = KOCH_ORDER.slice(0, level + 1);
-
-var morse = new MorseCodec();
-var morsePlayer = new MorseCodePlayer(55);
-
-/** Web Audio API Analyser - related variables */
-var bufferLength = _analyser.frequencyBinCount;
-var dataArray = new Uint8Array(bufferLength);
+var morse, morsePlayer;
 
 var canvas = document.getElementById("board");
 var ctx = canvas.getContext("2d");
 var keyInventory = [];    
 
 function init() {
+
+    morsePlayer = new MorseCodePlayer(55);
+    morse = new MorseCodec();
+
+    if(!localStorage.getItem('level')){
+        level = 1;
+    } else {
+        level = parseInt(localStorage.getItem('level'));
+    }
+
+    // Sets current level, slices the keyboard
+    levelUp(0);
 
     // Redraw the game board on window resize
     window.addEventListener('resize', redraw, false);
@@ -180,7 +179,6 @@ function createKeys() {
 function redraw() {
     canvas.width = window.innerWidth * window.devicePixelRatio;
     canvas.height = window.innerHeight * window.devicePixelRatio;
-    //console.log(window.innerWidth, window.innerHeight, canvas.width, canvas.height);
     ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
 
     createKeys();
@@ -191,7 +189,7 @@ function redraw() {
     ctx.fillStyle = KEY_ACTIVE;
     ctx.font = "64pt Courier New";
         ctx.fillText(
-            correct + " / " + round + " / " + ROUNDS,
+            correct + " / " + (round - 1) + " / " + ROUNDS,
             window.innerWidth / 2,
             128,
         );
