@@ -158,7 +158,6 @@ function createKeys() {
 
             if (current_keyboard.includes(letter)) {
                 color = KEY_ACTIVE;
-                console.log(letter);
             }
 
             let key = {
