@@ -1,17 +1,20 @@
 
 const KEYBOARD = [
-    ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "="],
+    ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-"],
     ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "/"],
     ["A", "S", "D", "F", "G", "H", "J", "K", "L", ";"],
     ["Z", "X", "C", "V", "B", "N", "M", ",", ".", "?"],
 ];
 
-const KOCH_ORDER = ['K', 'M', 'R', 'S', 'U', 'A', 'P', 'T', 'L', 'O',
+const KOCH_ORDER = [
+    'K', 'M', 'R', 'S', 'U', 'A', 'P', 'T', 'L', 'O',
     'W', 'I', '.', 'N', 'J', 'E', 'F', '0', 'Y', ',',
     'V', 'G', '5', '/', 'Q', '9', 'Z', 'H', '3', '8',
-    'B', '?', '4', '2', '7', 'C', '1', 'D', '6', 'X']
+    'B', '?', '4', '2', '7', 'C', '1', 'D', '6', 'X'
+];
 
-const KEY_OFFSET = 20;
+var KEY_OFFSET = 20;
+var MORSE_FONT_SIZE = "12px Courier New";
 const KEY_HEIGHT = 50;
 
 
@@ -144,6 +147,16 @@ function levelUp(increment = 1) {
 function createKeys() {
     keyInventory.length = 0;
 
+    if (window.innerWidth < 450){
+        KEY_OFFSET = 2;
+        MORSE_FONT_SIZE = "8px Courier New";
+        ctx.lineWidth = '1';
+    } else {
+        KEY_OFFSET = 20;
+        MORSE_FONT_SIZE = "12px Courier New";
+        ctx.lineWidth = '2';
+    }
+
     let width = (window.innerWidth - KEY_OFFSET) / KEYBOARD[0].length - KEY_OFFSET;
     let height = KEY_HEIGHT;
     
@@ -192,7 +205,6 @@ function redraw() {
 
     createKeys();
 
-    ctx.lineWidth = '2';
     ctx.textAlign = "center";
 
     ctx.fillStyle = KEY_ACTIVE;
@@ -219,7 +231,7 @@ function redraw() {
             element.top + 24,
         );
 
-        ctx.font = "12px Courier New";
+        ctx.font = MORSE_FONT_SIZE;
         ctx.fillText(
             morse.ALPHABET[element.label.toLowerCase()],
             element.left + element.width / 2,
