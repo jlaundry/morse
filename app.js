@@ -147,7 +147,7 @@ function levelUp(increment = 1) {
 function createKeys() {
     keyInventory.length = 0;
 
-    if (window.innerWidth < 450){
+    if (window.innerWidth < 650){
         KEY_OFFSET = 2;
         MORSE_FONT_SIZE = "8px Courier New";
         ctx.lineWidth = '1';
@@ -160,7 +160,7 @@ function createKeys() {
     let width = (window.innerWidth - KEY_OFFSET) / KEYBOARD[0].length - KEY_OFFSET;
     let height = KEY_HEIGHT;
     
-    let top = window.innerHeight - (KEYBOARD.length * (height + KEY_OFFSET) + KEY_OFFSET);
+    let top = window.innerHeight - (KEYBOARD.length * (height + KEY_OFFSET) + KEY_OFFSET) - 10;
 
     for(let i = 0; i < KEYBOARD.length; i++) {
         let row = KEYBOARD[i];
@@ -208,7 +208,7 @@ function redraw() {
     ctx.textAlign = "center";
 
     ctx.fillStyle = KEY_ACTIVE;
-    ctx.font = "64pt Courier New";
+    ctx.font = "48pt Courier New";
         ctx.fillText(
             correct + " / " + (round - 1),
             window.innerWidth / 2,
