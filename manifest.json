@@ -1,0 +1,15 @@
+{
+    "name": "Morse!",
+    "icons": [
+      {
+        "src": "apple-touch-icon.png",
+        "sizes": "180x180",
+        "type": "image/png"
+      }
+    ],
+    "theme_color": "#333333",
+    "background_color": "#333333",
+    "start_url": "index.html",
+    "display": "standalone",
+    "orientation": "any"
+  }

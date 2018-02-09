@@ -101,7 +101,7 @@ function play() {
         current_letter = current_keyboard[Math.floor(Math.random()*current_keyboard.length)];
     }
 
-    playLetter();
+    setTimeout(playLetter, 1000);
     
     redraw();
 }
