@@ -104,7 +104,6 @@ function play() {
 }
 
 function onClick(event){
-    console.re.debug(event.type);
     let x = event.pageX,
     y = event.pageY;
 
