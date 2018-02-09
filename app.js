@@ -47,21 +47,15 @@ function init() {
     window.addEventListener('resize', redraw, false);
     redraw();
 
-    // Find the letter clicked
+    // Find the letter clicked/touched
     canvas.addEventListener('click', function(event) {
-        let x = event.pageX,
-            y = event.pageY;
+        event.preventDefault();
+        onClick(event);
+    }, false);
 
-        let found = keyInventory.find(function(element) {
-            return (y > element.top && y < element.top + element.height 
-                && x > element.left && x < element.left + element.width
-                && element.color == KEY_ACTIVE);
-        });
-
-        if (found != null) {
-            guess(found.label);
-        }
-
+    canvas.addEventListener('touchstart', function(event) {
+        event.preventDefault();
+        onClick(event);
     }, false);
 
     // Find the letter typed
@@ -107,6 +101,22 @@ function play() {
     playLetter();
     
     redraw();
+}
+
+function onClick(event){
+    console.re.debug(event.type);
+    let x = event.pageX,
+    y = event.pageY;
+
+    let found = keyInventory.find(function(element) {
+        return (y > element.top && y < element.top + element.height
+            && x > element.left && x < element.left + element.width
+            && element.color == KEY_ACTIVE);
+    });
+
+    if (found != null) {
+        guess(found.label);
+    }
 }
 
 function guess(letter){
@@ -189,7 +199,7 @@ function redraw() {
     ctx.fillStyle = KEY_ACTIVE;
     ctx.font = "64pt Courier New";
         ctx.fillText(
-            correct + " / " + (round - 1) + " / " + ROUNDS,
+            correct + " / " + (round - 1),
             window.innerWidth / 2,
             128,
         );

@@ -210,7 +210,7 @@ var _morse = new MorseCodec();
 
     window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
     
-	var fixAudioContext = function (e) {
+    var fixAudioContext = function (e) {
         
         // Unlock the audioContext by calling resume - allows us to play audio on iOS Safari
         if (audioContext) {
@@ -228,15 +228,15 @@ var _morse = new MorseCodec();
         tag.src = silenceDataURL;
         tag.play();
 
-		// Remove events
-		document.removeEventListener('touchstart', fixAudioContext);
+        // Remove events
+        document.removeEventListener('touchstart', fixAudioContext);
         document.removeEventListener('touchend', fixAudioContext);
         
     morsePlayer = new MorseCodePlayer(55);
         
-	};
-	// iOS 6-8
-	document.addEventListener('touchstart', fixAudioContext);
-	// iOS 9
+    };
+    // iOS 6-8
+    document.addEventListener('touchstart', fixAudioContext);
+    // iOS 9
     document.addEventListener('touchend', fixAudioContext);
 })();
