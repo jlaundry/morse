@@ -20,8 +20,10 @@ const KEY_HEIGHT = 50;
 
 const KEY_ACTIVE = "#fa9f1f";
 const KEY_INACTIVE = "#666";
+const KEY_CORRECT = "green";
+const KEY_INCORRECT = "red";
 
-const ROUNDS = 20;
+const ROUNDS = 15;
 var round = 0;
 var correct = 0;
 var level, current_keyboard;
@@ -81,6 +83,8 @@ function init() {
 var timeoutHandle;
 var current_letter;
 
+var correct_key, incorrect_key;
+
 function play() {
     if (round == ROUNDS) {
         if ((correct / ROUNDS) >= 0.9) {
@@ -96,9 +100,12 @@ function play() {
     round++;
 
     if (round == 1) {
+        // Round 1 always starts with the newest key
         current_letter = current_keyboard[current_keyboard.length - 1];
     } else {
-        current_letter = current_keyboard[Math.floor(Math.random()*current_keyboard.length)];
+        // Any other round randomly picks from the last 6 letters
+        let random_position = current_keyboard.length - Math.floor(Math.random() * Math.min(current_keyboard.length, 6)) - 1;
+        current_letter = current_keyboard[random_position];
     }
 
     setTimeout(playLetter, 1000);
@@ -124,15 +131,30 @@ function onClick(event){
 function guess(letter){
     clearTimeout(timeoutHandle);
 
+    correct_key = current_letter;
+    let pause = 0;
+
     if (letter == current_letter){
         correct++;
+    } else {
+        incorrect_key = letter;
+        pause = 1000;
     }
 
-    play();
+    redraw();
+    setTimeout(play, pause);
 }
 
 function playLetter() {
     clearTimeout(timeoutHandle);
+
+    // Reset the red/green highlighting from the previous round
+    if (typeof(correct_key) == "string") {
+        correct_key = undefined;
+        incorrect_key = undefined;
+        redraw();
+    }
+    
     morsePlayer.playText(current_letter);
     timeoutHandle = setTimeout(playLetter, 3000);
 }
@@ -177,7 +199,11 @@ function createKeys() {
 
             let color = KEY_INACTIVE;
 
-            if (current_keyboard.includes(letter)) {
+            if (letter == correct_key) {
+                color = KEY_CORRECT;
+            } else if (letter == incorrect_key) {
+                color = KEY_INCORRECT;
+            } else if (current_keyboard.includes(letter)) {
                 color = KEY_ACTIVE;
             }
 
