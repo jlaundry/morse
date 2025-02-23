@@ -23,7 +23,9 @@ const KEY_INACTIVE = "#666";
 const KEY_CORRECT = "green";
 const KEY_INCORRECT = "red";
 const ROUNDS = 12;
+const S_START_BUTTON = "Click to Start"
 
+var game_running = false;
 var round = 0;
 var correct = 0;
 var level, current_keyboard;
@@ -116,6 +118,11 @@ function play() {
 function onClick(event){
     let x = event.pageX,
     y = event.pageY;
+
+    if (!game_running) {
+        game_running = true;
+        redraw();
+    }
 
     let found = keyInventory.find(function(element) {
         return (y > element.top && y < element.top + element.height
@@ -229,17 +236,28 @@ function redraw() {
     canvas.height = window.innerHeight * window.devicePixelRatio;
     ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
 
+    if (!game_running) {
+        ctx.textAlign = "center";
+        ctx.fillStyle = KEY_ACTIVE;
+        ctx.font = "24pt Courier New";
+        ctx.fillText(
+            S_START_BUTTON,
+            window.innerWidth / 2,
+            window.innerHeight / 2,
+        );
+        return;
+    }
+
     createKeys();
 
     ctx.textAlign = "center";
-
     ctx.fillStyle = KEY_ACTIVE;
     ctx.font = "48pt Courier New";
-        ctx.fillText(
+    ctx.fillText(
         correct + " / " + ROUNDS,
-            window.innerWidth / 2,
-            128,
-        );
+        window.innerWidth / 2,
+        128,
+    );
 
     keyInventory.forEach(function(element) {
         ctx.strokeStyle = element.color;
