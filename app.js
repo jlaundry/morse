@@ -22,8 +22,8 @@ const KEY_ACTIVE = "#fa9f1f";
 const KEY_INACTIVE = "#666";
 const KEY_CORRECT = "green";
 const KEY_INCORRECT = "red";
+const ROUNDS = 12;
 
-const ROUNDS = 15;
 var round = 0;
 var correct = 0;
 var level, current_keyboard;
@@ -236,7 +236,7 @@ function redraw() {
     ctx.fillStyle = KEY_ACTIVE;
     ctx.font = "48pt Courier New";
         ctx.fillText(
-            correct + " / " + (round - 1),
+        correct + " / " + ROUNDS,
             window.innerWidth / 2,
             128,
         );
